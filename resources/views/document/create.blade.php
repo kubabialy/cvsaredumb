@@ -30,8 +30,7 @@
             @csrf
             <div class="col-span-full">
                 <label for="cv_upload" class="block text-sm/6 font-medium text-gray-900 text-mono">Drop your CV</label>
-                <div
-                    class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-white">
+                <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-white drop-area">
                     <div class="text-center">
                         <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor"
                              aria-hidden="true" data-slot="icon" id="cv_icon">
@@ -87,6 +86,41 @@
 </section>
 
 <script>
+    const dropArea = document.querySelector('.drop-area');
+    const fileInput = document.querySelector('#cv_upload');
+
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('dragover');
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            updateFileDetails(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        updateFileDetails(e.target.files[0]);
+    });
+
+    const updateFileDetails = (file) => {
+        document.querySelector('#cv_upload_cta').innerText = file.name;
+        document.querySelector('#cv_upload_drag_and_drop').innerText = '';
+        document.querySelector('#cv_file_types').innerText = '';
+        document.querySelector('#cv_icon').classList.remove('text-gray-300');
+        document.querySelector('#cv_icon').classList.add('text-red-600');
+    };
+
+
     document.querySelector('#cv_upload')?.addEventListener('change', (e) => {
         document.querySelector('#cv_upload_cta').innerText = e.target.files[0].name
         document.querySelector('#cv_upload_drag_and_drop').innerText = ''

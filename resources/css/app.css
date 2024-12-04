@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.drop-area.dragover {
+    border-color: #dc2626;
+    background-color: #f8d7da;
+}
+
 .fade {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
