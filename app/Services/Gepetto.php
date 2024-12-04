@@ -9,6 +9,7 @@ use OpenAI\Client;
 
 final class Gepetto
 {
+    private const int RETRY_LIMIT = 3;
     private const string PROMPT = "
     Update contents of the provided CV data so that it matches the offer description giving highest chance of getting the interview.
     You can be very creative when it comes to description, however do not change the experience. Try to squeeze as much upside from each
@@ -57,8 +58,6 @@ final class Gepetto
     }
 
     /**
-     * TODO: Consider retrying the request if the AI response is empty
-     *
      * @param  string  $currentCVContent
      * @param  string  $offerDescription
      * @return GepettoResponse
@@ -66,17 +65,15 @@ final class Gepetto
      */
     public function generateCVContent(string $currentCVContent, string $offerDescription): GepettoResponse
     {
-        $prompt = $this->getPrompt($currentCVContent, $offerDescription);
-        $result = $this->client->chat()->create([
-            'model' => 'gpt-4o-mini',
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt],
-            ],
-        ]);
+        $retry = 0;
+        while ($retry < self::RETRY_LIMIT) {
+            $result = $this->sendRequest($currentCVContent, $offerDescription);
+            if (!empty($result->choices)) {
+                break;
+            }
+            $retry++;
+        }
 
-        // This could potentially be a problem if the AI is not intelligent enough, which it often isn't.
-        // In that case, we should retry the request.
-        // TODO: Implement retry mechanism
         if (empty($result->choices)) {
             throw new Exception('AI not intelligent enough to generate a response');
         }
@@ -85,6 +82,23 @@ final class Gepetto
         $response = json_decode($result->choices[0]->message->content, associative: true);
 
         return GepettoResponse::fromArray($response);
+    }
+
+    /**
+     * @param $currentCVContent
+     * @param $offerDescription
+     * @return OpenAI\Responses\Chat\CreateResponse
+     */
+    private function sendRequest($currentCVContent, $offerDescription): OpenAI\Responses\Chat\CreateResponse
+    {
+
+        $prompt = $this->getPrompt($currentCVContent, $offerDescription);
+        return $this->client->chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+        ]);
     }
 
     /**

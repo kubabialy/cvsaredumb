@@ -23,6 +23,7 @@
                 anyways, they have no value but for some reason companies still want them</p>
             <p class="font-mono text-xl text-slate-700 mb-4">Use this tool to generate a document 'fine tuned' for any
                 position you look for</p>
+            <p class="font-mono text-sm text-red-700 mb-4">This tool will download a new CV for you. <span class="font-bold">Don't panic</span>. It's definetly not a virus. Trust me, I'm a random guy on the internet.</p>
         </div>
 
         <form class="space-y-6" method="POST" enctype="multipart/form-data" id="generate_cv_form">
@@ -153,24 +154,21 @@
             body: formData
         })
 
-        if (!res.ok) {
-            loadingOff()
+        if (!res.ok || res.status !== 200) {
             alert('Something went wrong. Try again later, or leave a message at https://github.com/kubabialy/cvsaredumb')
+            loadingOff()
             return
+        } else {
+            const blob = await res.blob()
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'document.pdf'
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
         }
-
-        // start downloading
-        const blob = await res.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'document.pdf'
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-
         loadingOff()
-
     })
 </script>
 </body>
