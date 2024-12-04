@@ -18,6 +18,10 @@ class GepettoResponse
         private(set) readonly array $educations
     ) {}
 
+    /**
+     * @param  array  $data
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self(

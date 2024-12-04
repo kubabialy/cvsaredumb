@@ -20,6 +20,7 @@
         @endif
         <p>{{ $contents->personal->summary }}</p>
     </div>
+
     <div>
         <h2>Experience</h2>
         @foreach($contents->experiences as $experience)
@@ -30,13 +31,15 @@
         @endforeach
     </div>
 
-    <div>
-        <h2>Education</h2>
-        @foreach($contents->educations as $education)
-            <h3>{{ $education->degree }}</h3>
-            <p>{{ $education->institution }}</p>
-            <p>{{ $education->start_date }} - {{ $education->end_date }}</p>
-        @endforeach
-    </div>
+    @if(!empty($contents->educations))
+        <div>
+            <h2>Education</h2>
+            @foreach($contents->educations as $education)
+                <h3>{{ $education->degree }}</h3>
+                <p>{{ $education->institution }}</p>
+                <p>{{ $education->start_date }} - {{ $education->end_date }}</p>
+            @endforeach
+        </div>
+   @endif
 </body>
 </html>
