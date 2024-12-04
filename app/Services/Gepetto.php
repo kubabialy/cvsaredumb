@@ -69,7 +69,7 @@ final class Gepetto
         $retry = 0;
         while ($retry < self::RETRY_LIMIT) {
             $result = $this->sendRequest($currentCVContent, $offerDescription);
-            Log::info('Gepetto response', ['response' => $result]);
+            Log::info('Gepetto response', ['response' => $result->choices[0]->message->content]);
             if (!empty($result->choices)) {
                 break;
             }
