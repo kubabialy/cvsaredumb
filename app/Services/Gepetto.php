@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\GepettoResponse;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use OpenAI;
 use OpenAI\Client;
 
@@ -68,6 +69,7 @@ final class Gepetto
         $retry = 0;
         while ($retry < self::RETRY_LIMIT) {
             $result = $this->sendRequest($currentCVContent, $offerDescription);
+            Log::info('Gepetto response', ['response' => $result]);
             if (!empty($result->choices)) {
                 break;
             }
